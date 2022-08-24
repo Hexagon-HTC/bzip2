@@ -8,24 +8,23 @@ if(MSVC OR MSVC90 OR MSVC10)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 endif()
 
-set(SOURCE_SUBFOLDER ${CMAKE_CURRENT_SOURCE_DIR}/bzip2)
 set(BZ2_NAMESPACE bzip2)
 set(BZ2_CONFIG ${PROJECT_NAME}Config)
 
 option(BZ2_BUILD_EXE OFF)
 
-add_library(${PROJECT_NAME}  ${SOURCE_SUBFOLDER}/blocksort.c
-                            ${SOURCE_SUBFOLDER}/bzlib.c
-                            ${SOURCE_SUBFOLDER}/compress.c
-                            ${SOURCE_SUBFOLDER}/crctable.c
-                            ${SOURCE_SUBFOLDER}/decompress.c
-                            ${SOURCE_SUBFOLDER}/huffman.c
-                            ${SOURCE_SUBFOLDER}/randtable.c
-                            ${SOURCE_SUBFOLDER}/bzlib.h
-                            ${SOURCE_SUBFOLDER}/bzlib_private.h)
-target_include_directories(${PROJECT_NAME} PRIVATE ${SOURCE_SUBFOLDER})
+add_library(${PROJECT_NAME} blocksort.c
+                            bzlib.c
+                            compress.c
+                            crctable.c
+                            decompress.c
+                            huffman.c
+                            randtable.c
+                            bzlib.h
+                            bzlib_private.h)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER ${SOURCE_SUBFOLDER}/bzlib.h)
+set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER bzlib.h)
 set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin/Release)
 set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin/Debug)
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin/Release)
@@ -44,17 +43,10 @@ set_target_properties(${PROJECT_NAME} PROPERTIES PDB_NAME ${PROJECT_NAME})
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_PDB_NAME ${PROJECT_NAME})
 
 if(BZ2_BUILD_EXE)
-    add_executable(${CMAKE_PROJECT_NAME} ${SOURCE_SUBFOLDER}/bzip2.c)
+    add_executable(${CMAKE_PROJECT_NAME} bzip2.c)
     target_link_libraries(${CMAKE_PROJECT_NAME} ${PROJECT_NAME})
-    target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE ${SOURCE_SUBFOLDER})
+    target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
-
-#set_target_properties(${BZ2_LIBRARY} PROPERTIES VERSION ${BZ2_VERSION_STRING} SOVERSION ${BZ2_VERSION_MAJOR})
-
-
-#export(TARGETS ${BZ2_LIBRARY}
-#       NAMESPACE ${BZ2_NAMESPACE}::
-#       FILE "${CMAKE_CURRENT_BINARY_DIR}/${BZ2_CONFIG}.cmake")
 
 install(TARGETS ${PROJECT_NAME} EXPORT bzip2
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -75,9 +67,3 @@ install(EXPORT bzip2 NAMESPACE ${BZ2_NAMESPACE}:: DESTINATION ${CMAKE_INSTALL_LI
 if(MSVC)
 	install(FILES ${CMAKE_BINARY_DIR}/bin/Debug/${PROJECT_NAME}.pdb DESTINATION ${CMAKE_INSTALL_LIBDIR}/Debug CONFIGURATIONS Debug)
 endif(MSVC)
-
-#install(FILES ${SOURCE_SUBFOLDER}/bzlib.h DESTINATION include)
-
-#install(EXPORT ${BZ2_CONFIG}
-#        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${CMAKE_PROJECT_NAME}"
-#        NAMESPACE ${BZ2_LIBRARY}::)
